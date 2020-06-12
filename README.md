@@ -1,4 +1,4 @@
-# Top Trump: Starships Edition
+# Top Trump with starships :space_invader:
 Play digital Top Trump with Starship cards.  
 
 ![alt app](./)

@@ -2,11 +2,13 @@ import React, { Component } from 'react';
 import {
   ApolloClient,
   InMemoryCache,
-  gql,
+  gql
 } from "@apollo/client";
 
-import {  messageMapping, attributeMapping } from '../assets/mapping';
+import { attributeMapping } from '../assets/mapping';
 import Card from '../components/Card';
+import Modal from '../components/Modal';
+
 import ScoreBoard from '../components/ScoreBoard';
 import { GameContainerWrapper, CardContainerWrapper } from '../assets/styledComponents';
 
@@ -19,7 +21,7 @@ const GET_STARSHIPS = gql`
   {
     starships {
       name,
-      class,
+      classe: class,
       passengers,
       costInCredits,
       maxAtmospheringSpeed,
@@ -37,9 +39,10 @@ export default class GameContainer extends Component {
     yourCards: [],
     computerCards: [],
     winner: undefined,
-    modalAction: 'Continue', // or Restart 
+    modalType: undefined,
     showModal: false,
-    message: ''
+    yourScore: 0,
+    computerScore: 0
   }
 
   componentDidMount() {
@@ -52,7 +55,6 @@ export default class GameContainer extends Component {
     const { data } = await client.query({
       query: GET_STARSHIPS
     });
-    // refactor
     const shuffled = data.starships.slice().sort(() => (0.5 - Math.random()));
     const cards = shuffled.length % 2 ? shuffled.slice(1) : shuffled;
     const midPoint = Math.ceil(cards.length / 2)
@@ -71,69 +73,97 @@ export default class GameContainer extends Component {
     const rawAttribute = attribute[0].raw;
     const yourCurrentCard = this.state.yourCards[0];
     const computerCurrentCard = this.state.computerCards[0];
-    const yourScore = isFilm ? yourCurrentCard[rawAttribute].length : yourCurrentCard[rawAttribute];
-    const computerScore = isFilm ? computerCurrentCard[rawAttribute].length : computerCurrentCard[rawAttribute];
-    const newCardsToPush = [yourCurrentCard, computerCurrentCard];
+    const yourCardScore = isFilm ? yourCurrentCard[rawAttribute].length : yourCurrentCard[rawAttribute] ? yourCurrentCard[rawAttribute] : 0;
+    const computerCardScore = isFilm ? computerCurrentCard[rawAttribute].length : computerCurrentCard[rawAttribute] ? computerCurrentCard[rawAttribute] : 0;
+    const { yourScore, computerScore } = this.state;
 
     // after one card at a time
     let yourNewCards = this.state.yourCards.slice(1);
     let computerNewCards = this.state.computerCards.slice(1);
 
-    if (yourScore === computerScore) {
-      this.setState({
+    if (yourCardScore === computerCardScore) {
+      return this.setState({
+        modalType: 'draw',
         showModal: true,
-        message: messageMapping.even
-      });
-    } else if (computerScore < yourScore) {
-      yourNewCards.push(...newCardsToPush);
-      this.setState({
-        showModal: true,
-        message: messageMapping.round.winner.user
-      });
-    } else { // if computer wins
-      computerNewCards.push(...newCardsToPush);
-      this.setState({
-        showModal: true,
-        message: messageMapping.round.winner.computer
       });
     }
 
-    const winner = this.checkWinner(yourNewCards, computerNewCards);
-    if (winner === 'user') {
-      return this.setState({
-        showModal: true,
-        message: messageMapping.winner.user
-      });
-     } else if (winner === 'computer') {
-      return this.setState({
-        showModal: true,
-        message: messageMapping.winner.computer
-      });
-    } 
-    else { // continues to play
+    if (computerCardScore < yourCardScore) {
+      const temp = this.state.yourScore;
       this.setState({
+        yourScore: temp + 1,
+        yourCards: yourNewCards,
+        computerCards: computerNewCards
+      });
+    } else { // if computer wins
+
+      const temp = this.state.computerScore;
+      this.setState({
+        computerScore: temp + 1,
         yourCards: yourNewCards,
         computerCards: computerNewCards
       });
     }
+
+    if (!yourNewCards.length) {
+      const winner = this.checkWinner(yourScore, computerScore);
+      if (winner === 'user') {
+        return this.setState({
+          showModal: true,
+          modalType: 'win'
+        });
+      } else if (winner === 'computer') {
+        return this.setState({
+          showModal: true,
+          modalType: 'lose'
+        });
+      }
+    }
   }
 
-  checkWinner = (yourCards,computerCards ) => {
-    if (!yourCards.length) return 'computer';
-    else if (!computerCards.length) return 'you'
-    else return undefined;
+  handleContinue = () => {
+    this.setState({
+      showModal: false
+    })
+  }
+  
+  handleRestart = () => {
+    const entries = this.state.cards;
+    const shuffled = entries.slice().sort(() => (0.5 - Math.random()));
+    const cards = shuffled.length % 2 ? shuffled.slice(1) : shuffled;
+    const midPoint = Math.ceil(cards.length / 2)
+
+    this.setState({
+      cards: cards,
+      winner: undefined,
+      dataLoading: false,
+      showModal: false,
+      yourCards: cards.slice(0, midPoint),
+      computerCards: cards.slice(midPoint),
+      yourScore: 0,
+      computerScore: 0
+    });
+  }
+
+  checkWinner = (yourScore, computerScore) => {
+    const winner = computerScore < yourScore ? 'user' : 'computer';
+    this.setState({
+      winner
+    })
+    return winner;
   }
 
   render() {
-    const { yourCards, computerCards } = this.state;
-    
+    const { winner, showModal, modalType, yourCards, computerCards, yourScore, computerScore } = this.state;
+    const buttonAction = modalType === 'draw' ? this.handleContinue : this.handleRestart;
     return (
       <GameContainerWrapper>
-        <CardContainerWrapper>
+        {showModal ? <Modal type={modalType} onClick={buttonAction} /> : null}
+        {winner ? null : (<CardContainerWrapper>
           <Card {...yourCards[0]} onClick={this.handleClick} />
-        <ScoreBoard yourCards={yourCards} computerCards={computerCards} />
+          <ScoreBoard yourScore={yourScore} computerScore={computerScore} cardsLeft={computerCards.length} />
           <Card {...computerCards[0]} isComputer={false} />
-        </CardContainerWrapper>
+        </CardContainerWrapper>)}
       </GameContainerWrapper>
     );
   }

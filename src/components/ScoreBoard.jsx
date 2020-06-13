@@ -1,11 +1,13 @@
 import React from 'react';
 
-import { ScoreBoardWrapper } from '../assets/styledComponents'
+import { ScoreBoardWrapper, Text } from '../assets/styledComponents'
 
-export default function ScoreBoard({ yourCards, computerCards }) {
+export default function ScoreBoard({ yourScore, computerScore, cardsLeft }) {
   return (
     <ScoreBoardWrapper>
-      {yourCards.length} : {computerCards.length}
+      <Text small>Remaining cards</Text>
+      <Text big>{cardsLeft}</Text>
+      <Text big>{yourScore} : {computerScore}</Text>
     </ScoreBoardWrapper>
   )
 }

@@ -1,38 +1,44 @@
-export const messageMapping = {
-  even: "Your score and Your opponent score are even. Please choose other category to battle!",
-  restart: "Round Over. Please Restart button to play a new game.",
-  round: {
-    winner: {
-      user: "Your score beats the opponent!",
-      computer: "Your score lost :("
-    }
-  },
-  winner: {
-    user: "Woohoo, you won the game, your opponent has lost all their cards! Play again!",
-    computer: "Sorry, you are all out of cards, your oppoent has won this time! Why not play again?"
-  }
-}
-
 export const attributeMapping = [
   {
-    name: "passengers", 
+    name: "passengers",
     raw: "passengers"
   },
   {
-    name: "classe", 
+    name: "classe",
     raw: "class"
   },
   {
-    name: "cost", 
+    name: "cost",
     raw: "costInCredits"
   },
   {
-    name: "speed", 
+    name: "speed",
     raw: "maxAtmospheringSpeed"
   },
   {
-    name: "films", 
+    name: "films",
     raw: "films"
   },
+]
+
+export const modalMapping = [
+  {
+    type: 'draw',
+    text: 'Draw!',
+    subText: 'Draw! Choose a differnt attribute to fight',
+    buttonAction: 'continue'
+  },
+  {
+    type: 'win',
+    text: 'You Win!',
+    subText: 'Winner is you! Play again!',
+    buttonAction: 'Restart'
+  },
+  {
+    type: 'lose',
+    text: 'You Lost!',
+    subText: 'You lost, try again!',
+    buttonAction: 'Restart'
+  }
 ]
 

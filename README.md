@@ -1,7 +1,5 @@
 # Top Trump: Starships Edition
 Play digital Top Trump with Starship cards.  
-
-![alt app](./)
 --- 
 
 ### To run the app, run `npm start` at root level

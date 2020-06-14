@@ -1,6 +1,5 @@
 import React from 'react';
 
-import example from './../assets/starships/example.jpg'
 import DetailContainer from './DetailContainer';
 import { CardWrapper, StarshipImg, Text } from '../assets/styledComponents'
 
@@ -12,10 +11,12 @@ export default function Card(props) {
     speed: isComputer ? "?" : maxAtmospheringSpeed ? maxAtmospheringSpeed : 0,
     films: isComputer ? "?" : films ? films.length : null
   }
+  const firstName = name ? name.split(' ')[0]: 'example';
+  const imgName = firstName.toLowerCase();
 
   return (
     <CardWrapper>
-      <StarshipImg src={example} />
+      <StarshipImg src={`../starships/${imgName}.jpg`} />
       <Text small>{name}</Text>
       <Text small>{classe}</Text>
       <DetailContainer details={details} handleClick={onClick} />

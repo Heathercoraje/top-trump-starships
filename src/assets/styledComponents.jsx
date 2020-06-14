@@ -46,7 +46,7 @@ export const CardWrapper = styled.section`
 
   @media (min-width: 800px) {
     border: 5px solid white;
-    width: 35%;
+    width: 33%;
     height: 100%;
   }
 `
@@ -85,9 +85,10 @@ export const DetailItem = styled.button`
 
 export const StarshipImg = styled.img`
   display:none;
+
   @media (min-width: 800px) {
     width: 100%;
-    height: 50%;
+    height: 60%;
     display:block;
   }
 `

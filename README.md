@@ -1,5 +1,5 @@
 # Top Trump with starships :space_invader:
-Play digital Top Trump with Starship cards.  To run the app, run `npm start` at root level. Then, open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Play digital Top Trump with Starship cards. Compare attributes of your starships and win the game!
 
 ![alt app](./screenshot.png)
 

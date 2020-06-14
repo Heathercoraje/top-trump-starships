@@ -126,7 +126,7 @@ export default class GameContainer extends Component {
       showModal: false
     })
   }
-  
+
   handleRestart = () => {
     const entries = this.state.cards;
     const shuffled = entries.slice().sort(() => (0.5 - Math.random()));
@@ -162,7 +162,7 @@ export default class GameContainer extends Component {
         {winner ? null : (<CardContainerWrapper>
           <Card {...yourCards[0]} onClick={this.handleClick} />
           <ScoreBoard yourScore={yourScore} computerScore={computerScore} cardsLeft={computerCards.length} />
-          <Card {...computerCards[0]} isComputer={false} />
+          <Card {...computerCards[0]} isComputer={true} />
         </CardContainerWrapper>)}
       </GameContainerWrapper>
     );

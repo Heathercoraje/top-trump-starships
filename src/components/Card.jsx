@@ -1,6 +1,6 @@
 import React from 'react';
 
-import example from './../assets/example.jpg'
+import example from './../assets/starships/example.jpg'
 import DetailContainer from './DetailContainer';
 import { CardWrapper, StarshipImg, Text } from '../assets/styledComponents'
 

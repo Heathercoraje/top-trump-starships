@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   ApolloClient,
   InMemoryCache,
@@ -32,139 +32,134 @@ const GET_STARSHIPS = gql`
   }
 `
 
-export default class GameContainer extends Component {
-  state = {
-    dataLoading: true,
-    cards: [],
-    yourCards: [],
-    computerCards: [],
-    winner: undefined,
-    modalType: undefined,
-    showModal: false,
-    yourScore: 0,
-    computerScore: 0
-  }
+export default function GameContainer() {
+  const [dataLoading, setDataLoading] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [winner, setWinner] = useState(undefined);
+  const [totalCards, setTotalCards] = useState([]);
+  const [yourCards, setYourCards] = useState([]);
+  const [computerCards, setComputerCards] = useState([]);
+  const [modalType, setModalType] = useState(undefined);
+  const [yourScore, setYourScore] = useState(0);
+  const [computerScore, setComputerScore] = useState(0)
 
-  componentDidMount() {
-    this.loadData();
-  }
+  useEffect(() => {
+    setDataLoading(true);
 
-  loadData = async () => {
-    this.setState({ dataLoading: true });
+    async function fetchData() {
+      const { data } = await client.query({
+        query: GET_STARSHIPS
+      });
+      const shuffled = data.starships.slice().sort(() => (0.5 - Math.random()));
+      const cards = shuffled.length % 2 ? shuffled.slice(1) : shuffled;
+      const midPoint = Math.ceil(cards.length / 2)
 
-    const { data } = await client.query({
-      query: GET_STARSHIPS
-    });
-    const shuffled = data.starships.slice().sort(() => (0.5 - Math.random()));
-    const cards = shuffled.length % 2 ? shuffled.slice(1) : shuffled;
-    const midPoint = Math.ceil(cards.length / 2)
+      setTotalCards(cards);
+      setYourCards(cards.slice(0, midPoint));
+      setComputerCards(cards.slice(midPoint));
+      setDataLoading(false);
+    }
 
-    this.setState({
-      cards: cards,
-      dataLoading: false,
-      yourCards: cards.slice(0, midPoint),
-      computerCards: cards.slice(midPoint)
-    });
-  }
+    fetchData();
+    ;
+  }, []);
 
-  handleClick = (category) => {
-    const isFilm = category === 'films';
-    const attribute = attributeMapping.filter(item => item.name === category);
-    const rawAttribute = attribute[0].raw;
-    const yourCurrentCard = this.state.yourCards[0];
-    const computerCurrentCard = this.state.computerCards[0];
-    const yourCardScore = isFilm ? yourCurrentCard[rawAttribute].length : yourCurrentCard[rawAttribute] ? yourCurrentCard[rawAttribute] : 0;
-    const computerCardScore = isFilm ? computerCurrentCard[rawAttribute].length : computerCurrentCard[rawAttribute] ? computerCurrentCard[rawAttribute] : 0;
-    const { yourScore, computerScore } = this.state;
-
-    // after one card at a time
-    let yourNewCards = this.state.yourCards.slice(1);
-    let computerNewCards = this.state.computerCards.slice(1);
+  function handleClick(category) {
+    const yourCardScore = getScoreFromCard(yourCards[0], category);
+    const computerCardScore = getScoreFromCard(computerCards[0], category);
+    let yourNewCards = yourCards.slice(1);
+    let computerNewCards = computerCards.slice(1);
 
     if (yourCardScore === computerCardScore) {
-      return this.setState({
-        modalType: 'draw',
-        showModal: true,
-      });
+      setModalType('draw');
+      setShowModal(true);
+      return;
     }
 
-    if (computerCardScore < yourCardScore) {
-      const temp = this.state.yourScore;
-      this.setState({
-        yourScore: temp + 1,
-        yourCards: yourNewCards,
-        computerCards: computerNewCards
-      });
-    } else { // if computer wins
-
-      const temp = this.state.computerScore;
-      this.setState({
-        computerScore: temp + 1,
-        yourCards: yourNewCards,
-        computerCards: computerNewCards
-      });
+    if (computerCardScore < yourCardScore) { /* you are winning */
+      const temp = yourScore;
+      setYourScore(temp + 1);
+      setYourCards(yourNewCards);
+      setComputerCards(computerNewCards);
+      return;
+    } else {                               /* computer is winning */
+      const temp = computerScore;
+      setComputerScore(temp + 1);
+      setComputerCards(computerNewCards);
+      setYourCards(yourNewCards);
     }
 
-    if (!yourNewCards.length) {
-      const winner = this.checkWinner(yourScore, computerScore);
+    if (!yourNewCards.length) {          /* no more card */
+      const winner = checkWinner(yourScore, computerScore);
+
       if (winner === 'user') {
-        return this.setState({
-          showModal: true,
-          modalType: 'win'
-        });
+        setShowModal(true);
+        setModalType('win');
+        return;
       } else if (winner === 'computer') {
-        return this.setState({
-          showModal: true,
-          modalType: 'lose'
-        });
+        setShowModal(true);
+        setModalType('lose');
+        return;
       }
     }
   }
 
-  handleContinue = () => {
-    this.setState({
-      showModal: false
-    })
+  function getScoreFromCard(currentCard, category) {
+    let cardScore;
+    const isFilm = category === 'films';
+    const attribute = attributeMapping.filter(item => item.name === category);
+    const rawAttribute = attribute[0].raw;
+
+    if (isFilm && currentCard[rawAttribute]) {          /* if film and it is not empty */
+      cardScore = currentCard[rawAttribute].length;     /* return films length */
+    } else if (!isFilm && currentCard[rawAttribute]) {  /* it is not film and has value */
+      cardScore = currentCard[rawAttribute];            /* rethrn that attribute value */
+    } else {
+      cardScore = 0;
+    }
+    return cardScore;
   }
 
-  handleRestart = () => {
-    const entries = this.state.cards;
+  function handleContinue() {
+    setShowModal(false);
+    setModalType(undefined);
+    return;
+  }
+
+  function handleRestart() {
+    const entries = totalCards;
     const shuffled = entries.slice().sort(() => (0.5 - Math.random()));
     const cards = shuffled.length % 2 ? shuffled.slice(1) : shuffled;
     const midPoint = Math.ceil(cards.length / 2)
 
-    this.setState({
-      cards: cards,
-      winner: undefined,
-      dataLoading: false,
-      showModal: false,
-      yourCards: cards.slice(0, midPoint),
-      computerCards: cards.slice(midPoint),
-      yourScore: 0,
-      computerScore: 0
-    });
+    setTotalCards(cards);
+    setWinner(undefined);
+    setDataLoading(false);
+    setShowModal(false)
+    setYourCards(cards.slice(0, midPoint));
+    setComputerCards(cards.slice(midPoint));
+    setYourScore(0);
+    setComputerScore(0);
   }
 
-  checkWinner = (yourScore, computerScore) => {
+  function checkWinner(yourScore, computerScore) {
     const winner = computerScore < yourScore ? 'user' : 'computer';
-    this.setState({
-      winner
-    })
+    setWinner(winner);
     return winner;
   }
 
-  render() {
-    const { winner, showModal, modalType, yourCards, computerCards, yourScore, computerScore } = this.state;
-    const buttonAction = modalType === 'draw' ? this.handleContinue : this.handleRestart;
-    return (
-      <GameContainerWrapper>
+  const buttonAction = modalType === 'draw' ? handleContinue : handleRestart;
+
+  return (
+    <>
+      {dataLoading ? null : (<GameContainerWrapper>
         {showModal ? <Modal type={modalType} onClick={buttonAction} /> : null}
         {winner ? null : (<CardContainerWrapper>
-          <Card {...yourCards[0]} onClick={this.handleClick} />
+          <Card {...yourCards[0]} onClick={handleClick} />
           <ScoreBoard yourScore={yourScore} computerScore={computerScore} cardsLeft={computerCards.length} />
           <Card {...computerCards[0]} isComputer={true} />
         </CardContainerWrapper>)}
-      </GameContainerWrapper>
-    );
-  }
+      </GameContainerWrapper>)}
+    </>
+  );
 }

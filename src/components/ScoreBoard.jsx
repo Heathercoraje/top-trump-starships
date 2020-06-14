@@ -7,7 +7,7 @@ export default function ScoreBoard({ yourScore, computerScore, cardsLeft }) {
     <ScoreBoardWrapper>
       <Text small>Remaining cards</Text>
       <Text big>{cardsLeft}</Text>
-      <Text big>{yourScore} : {computerScore}</Text>
+      <Text big score>{yourScore} : {computerScore}</Text>
     </ScoreBoardWrapper>
   )
 }

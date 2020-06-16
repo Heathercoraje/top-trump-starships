@@ -11,42 +11,54 @@ export const GameContainerWrapper = styled.div`
 
   @media (min-width: 800px) {
     width: 100%;
-    height: 72vh;
+    height: 75vh;
   }
 `;
 
 /* Card */
 export const CardContainerWrapper = styled.div`
   width: 100%;
-  height: 90%;
+  height: 95%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
 
   @media (min-width: 800px) {
-    width: 80%;
-    height: 90%;
+    width: 85%;
+    height: 100%;
     flex-direction: row;
     justify-content: space-evenly;
   }
 `;
 
 export const CardWrapper = styled.section`
-  width: 85%;
-  height: 35%;
+  width: 75%;
+  height: 45%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: start;
   border: 2px solid white;
-
+  padding-botomm: 10px;
   border-radius: 5px;
 
   @media (min-width: 800px) {
+    padding-bottom: 1vh;
     border: 5px solid white;
-    width: 33%;
-    height: 100%;
+    width: 35%;
+    height: 98%;
+  }
+`;
+
+export const StarshipImg = styled.img`
+  display: none;
+
+  @media (min-width: 800px) {
+    width: 100%;
+    max-height: 45%;
+    min-height: 45%;
+    display: block;
   }
 `;
 
@@ -58,37 +70,31 @@ export const DetailContainerWrapper = styled.div`
   align-items: center;
   justify-content: center;
   @media (min-width: 800px) {
-    height: 50%;
+    height: 38%;
   }
 `;
 
 export const DetailItem = styled.button`
-  margin-bottom: 3px;
+  font-family: monospace;
+  margin-bottom: 1px;
   width: 80%;
   display: block;
   border: white 0.5px solid;
   border-radius: 10px;
-  font-size: 1rem;
+  font-size: 0.8rem;
   background-color: black;
   outline: none;
   padding: 4px;
   cursor: pointer;
 
   @media (min-width: 800px) {
-    padding: 5px;
-    font-size: 1.1rem;
+  margin-bottom: 3px;
+  font-size: 1rem;
+
+    padding: 4px;
+    font-size: 1rem;
     width: 20vw;
     height: 32vh;
-  }
-`;
-
-export const StarshipImg = styled.img`
-  display: none;
-
-  @media (min-width: 800px) {
-    width: 100%;
-    height: 60%;
-    display: block;
   }
 `;
 
@@ -116,22 +122,23 @@ export const ModalDialog = styled.dialog`
 `;
 
 export const Text = styled.p`
-  font-size: ${(props) => (props.small ? '15px' : '20px')};
-  font-family: 'Alfa Slab One', cursive;
+  font-weight: bold;
+  margin: ${(props) => (props.small ? '5px' : '10px')};
+  font-size: ${(props) => (props.small ? '0.8rem' : '1rem')};
   color: ${(props) => (props.score ? 'gold' : 'inherit')};
-  margin: 5px;
 
   @media (min-width: 800px) {
-    font-size: ${(props) => (props.small ? '1.2rem' : '2.5rem')};
+    margin: ${(props) => (props.small ? '10px' : '8px')};
+    font-size: ${(props) => (props.small ? '1.1rem' : '1.5rem')};
   }
 `;
 export const Button = styled.button`
+  font-family: monospace;
   margin: 5px;
   font-size: 1.5rem;
   padding: 1vh 4vw;
   background-color: black;
   border-radius: 25px;
-  font-family: 'Alfa Slab One', cursive;
   outline: none;
 `;
 /* ScoreBoard */

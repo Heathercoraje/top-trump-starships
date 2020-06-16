@@ -26,7 +26,7 @@ export default function Card(props) {
   return (
     <CardWrapper>
       <StarshipImg src={`../starships/${imgName}.jpg`} />
-      <Text small>{name}</Text>
+      <Text big>{name}</Text>
       <Text small>{classe}</Text>
       <DetailContainer
         details={details}

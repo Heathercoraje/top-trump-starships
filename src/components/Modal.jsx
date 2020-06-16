@@ -1,10 +1,10 @@
 import React from 'react';
 
-import { ModalDialog, Text, Button} from '../assets/styledComponents'
+import { ModalDialog, Text, Button } from '../assets/styledComponents';
 import { modalMapping } from '../assets/mapping';
 
 export default function Modal({ type, onClick }) {
-  const modal = modalMapping.filter(item => item.type === type);
+  const modal = modalMapping.filter((item) => item.type === type);
 
   return (
     <ModalDialog open>
@@ -12,5 +12,5 @@ export default function Modal({ type, onClick }) {
       <Text small>{modal[0].subText}</Text>
       <Button onClick={() => onClick(type)}>{modal[0].buttonAction}</Button>
     </ModalDialog>
-  )
+  );
 }

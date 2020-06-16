@@ -64,43 +64,33 @@ export default function GameContainer() {
     ;
   }, []);
 
-  function handleClick(category) {
-    const yourCardScore = getScoreFromCard(yourCards[0], category);
-    const computerCardScore = getScoreFromCard(computerCards[0], category);
-    let yourNewCards = yourCards.slice(1);
-    let computerNewCards = computerCards.slice(1);
-
-    if (yourCardScore === computerCardScore) {
-      setModalType('draw');
+  function handleClick(isComputer, category) {
+    if (isComputer) {
+      setModalType('miss');
       setShowModal(true);
-      return;
-    }
+    } else {
+      const yourCardScore = getScoreFromCard(yourCards[0], category);
+      const computerCardScore = getScoreFromCard(computerCards[0], category);
+      const isLastCard = !Boolean(yourCards.slice(1).length);
 
-    if (computerCardScore < yourCardScore) { /* you are winning */
-      const temp = yourScore;
-      setYourScore(temp + 1);
-      setYourCards(yourNewCards);
-      setComputerCards(computerNewCards);
-      return;
-    } else {                               /* computer is winning */
-      const temp = computerScore;
-      setComputerScore(temp + 1);
-      setComputerCards(computerNewCards);
-      setYourCards(yourNewCards);
-    }
-
-    if (!yourNewCards.length) {          /* no more card */
-      const winner = checkWinner(yourScore, computerScore);
-
-      if (winner === 'user') {
+      let yourNewCards = yourCards.slice(1);
+      let computerNewCards = computerCards.slice(1)
+      if (yourCardScore === computerCardScore) {
+        setModalType('draw');
         setShowModal(true);
-        setModalType('win');
-        return;
-      } else if (winner === 'computer') {
-        setShowModal(true);
-        setModalType('lose');
-        return;
       }
+      if (computerCardScore < yourCardScore) { /* you are winning */
+        const temp = yourScore;
+        setYourScore(temp + 1);
+        setYourCards(yourNewCards);
+        setComputerCards(computerNewCards);
+      } else {                               /* computer is winning */
+        const temp = computerScore;
+        setComputerScore(temp + 1);
+        setComputerCards(computerNewCards);
+        setYourCards(yourNewCards);
+      }
+      return updateWinner(yourScore, computerScore, isLastCard);
     }
   }
 
@@ -142,22 +132,35 @@ export default function GameContainer() {
     setComputerScore(0);
   }
 
-  function checkWinner(yourScore, computerScore) {
-    const winner = computerScore < yourScore ? 'user' : 'computer';
-    setWinner(winner);
-    return winner;
+  function updateWinner(yourScore, computerScore, isLastCard) {
+    const currentWinner = (computerScore === yourScore) ? 'even' : (computerScore < yourScore) ? 'user' : 'computer';
+    setWinner(currentWinner);
+    if (isLastCard) {
+      if (currentWinner === 'user') {
+        setShowModal(true);
+        setModalType('win');
+        return;
+      } else if (currentWinner === 'computer') {
+        setShowModal(true);
+        setModalType('lose');
+        return;
+      } else {
+        setShowModal(true);
+        setModalType('even');
+      }
+    }
   }
 
-  const buttonAction = modalType === 'draw' ? handleContinue : handleRestart;
+  const buttonAction = ((modalType === 'miss') || (modalType === 'draw')) ? handleContinue : handleRestart;
 
+  /* no overlay div for accessbility */
   return (
     <>
       {dataLoading ? null : (<GameContainerWrapper>
-        {showModal ? <Modal type={modalType} onClick={buttonAction} /> : null}
-        {winner ? null : (<CardContainerWrapper>
+        {showModal ? <Modal type={modalType} onClick={buttonAction} /> : (<CardContainerWrapper>
           <Card {...yourCards[0]} onClick={handleClick} />
           <ScoreBoard yourScore={yourScore} computerScore={computerScore} cardsLeft={computerCards.length} />
-          <Card {...computerCards[0]} isComputer={true} />
+          <Card {...computerCards[0]} onClick={handleClick} isComputer={true} />
         </CardContainerWrapper>)}
       </GameContainerWrapper>)}
     </>

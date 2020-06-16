@@ -2,12 +2,13 @@ import React from 'react';
 
 import { DetailContainerWrapper, DetailItem } from '../assets/styledComponents'
 
-function getDetails(detailObj, onClick) {
-  return Object.keys(detailObj).map((key) => <DetailItem key={key} onClick={()=> onClick(key)}>{key}: {detailObj[key]}</DetailItem>);
+function getDetails(detailObj, onClick, isComputer) {
+  return Object.keys(detailObj).map((key) => <DetailItem key={key} onClick={() => onClick(isComputer, key)}>{key}: {detailObj[key]}</DetailItem>);
 }
 
-export default function DetailContainer(props) {
-  const detailList = getDetails(props.details, props.handleClick);
+export default function DetailContainer({ details, handleClick, isComputer }) {
+
+  const detailList = getDetails(details, handleClick, isComputer);
   return (
     <DetailContainerWrapper>
       {detailList}

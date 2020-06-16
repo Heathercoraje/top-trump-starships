@@ -37,8 +37,20 @@ export const modalMapping = [
   {
     type: 'lose',
     text: 'You Lost!',
-    subText: 'You lost, try again!',
+    subText: 'You lost, Try again!',
     buttonAction: 'Restart'
+  },
+  {
+    type: 'even',
+    text: 'Even!',
+    subText: 'Good game but no winner, play again!',
+    buttonAction: 'Restart'
+  },
+  {
+    type: 'miss',
+    text: 'Click Miss!',
+    subText: 'Please click on attributes on your card',
+    buttonAction: 'continue'
   }
 ]
 

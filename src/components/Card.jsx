@@ -19,7 +19,7 @@ export default function Card(props) {
       <StarshipImg src={`../starships/${imgName}.jpg`} />
       <Text small>{name}</Text>
       <Text small>{classe}</Text>
-      <DetailContainer details={details} handleClick={onClick} />
+      <DetailContainer details={details} handleClick={onClick} isComputer={isComputer}/>
     </CardWrapper>
   )
 }
